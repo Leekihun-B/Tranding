@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="MembersMapper">
+	<resultMap id="MembersMap"
+		type="study.spring.trspring.model.Members">
+		<!-- Beans의 멤버변수(property)이름과 대상 테이블의 컬럼(column)을 연결한다. -->
+		<result property="id" column="id" />
+		<result property="m_id" column="m_id" />
+		<result property="m_pw" column="m_pw" />
+		<result property="m_name" column="m_name" />
+		<result property="m_username" column="m_username" />
+		<result property="m_email" column="m_email" />
+		<result property="m_phone" column="m_phone" />
+		<result property="m_birthday" column="m_birthday" />
+		<result property="m_email_agree" column="m_email_agree" />
+		<result property="m_address" column="m_address" />
+		<result property="m_modifydate" column="m_modifydate" />
+		<result property="m_joindate" column="m_joindate" />
+		<result property="m_enddate" column="m_enddate" />
+		<result property="m_end" column="m_end" />
+		<result property="m_point" column="m_point" />
+	</resultMap>
+	
+
+	<!-- 단일행 조회를 위한 기능 정의 -->
+	<select id="selectItem"
+		parameterType="study.spring.trspring.model.Members"
+		resultMap="MembersMap">
+		SELECT id ,m_id, m_pw, m_name, m_username, m_email, m_phone, 
+		m_birthday, m_email_agree, m_address, m_modifydate, m_joindate, m_enddate, m_end, m_point 
+		FROM members
+		WHERE id=#{id}
+	</select>
+	<!-- 다중행 조회를 위한 기능 정의 -->
+	<select id="selectList"
+		parameterType="study.spring.trspring.model.Members"
+		resultMap="MembersMap">
+		SELECT id ,m_id, m_pw, m_name, m_username, m_email, m_phone, 
+		m_birthday, m_email_agree, m_address, m_modifydate, m_joindate, m_enddate, m_end, m_point 
+		FROM members
+		<where>
+			<if test="m_name != null and m_name != ''">
+				m_name LIKE concat('%', #{m_name}, '%')
+			</if>
+		</where>
+		ORDER BY id ASC
+		
+		<if test="listCount > 0" >
+		LIMIT #{offset}, #{listCount}
+		</if>
+	</select>
+	<!-- 데이터 저장을 위한 기능 정의 -->
+	<insert id="insertItem"
+		parameterType="study.spring.trspring.model.Members"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO members (
+		id ,m_id, m_pw, m_name, m_username, m_email, m_phone, 
+		m_birthday, m_email_agree, m_address, m_modifydate, m_joindate, m_enddate, m_end, m_point 
+		) 
+		VALUES (
+		#{id},#{m_id}, md5(#{m_pw}) ,#{m_name},#{m_username},#{m_email},#{m_phone},
+		#{m_birthday},#{m_email_agree},#{m_address},#{m_modifydate},#{m_joindate},#{m_enddate}, 'N' ,#{m_point}
+		)
+	</insert>
+	<!-- 데이터 삭제를 위한 기능 정의 -->
+	<delete id="deleteItem"
+		parameterType="study.spring.trspring.model.Members">
+		DELETE FROM members WHERE id=#{id}
+	</delete>
+	<!-- 데이터 갱신을 위한 기능 정의 -->
+	<update id="updateItem"
+		parameterType="study.spring.trspring.model.Members">
+		UPDATE members SET 
+		id=#{id}, m_id=#{m_id}, m_pw=#{m_pw}, m_name=#{m_name}, m_username=#{m_username}, m_email=#{m_email}, 
+        m_phone=#{m_phone}, m_birthday=#{m_birthday}, m_email_agree=#{m_email_agree}, m_address=#{m_address}, 
+        m_modifydate=#{m_modifydate}, m_joindate=#{m_joindate}, m_enddate=#{m_enddate}, 
+        m_end=#{m_end}, m_point=#{m_point}
+		WHERE id=#{id}
+	</update>
+	<!-- 조건에 맞는 데이터 수를 집계하여 int 타입으로 반환한다. count , max , min , sum , avg 함수를 
+		사용한 경우 Mapper 에서는 resultMap이 아닌 resultType 으로 반환한다. -->
+	<!-- 데이터 수 조회하기 -->
+	<select id="selectCountAll"
+		parameterType="study.spring.trspring.model.Members"
+		resultType="int">
+		SELECT COUNT(*) FROM members
+		<where>
+			<if test="m_name != null and m_name != ''">
+				m_name LIKE concat('%', #{m_name}, '%')
+			</if>
+		</where>
+	</select>
+</mapper>
